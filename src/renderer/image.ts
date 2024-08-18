@@ -1,9 +1,10 @@
-import { Tokens } from 'marked';
+import { Renderer, Tokens } from 'marked';
 
 /**
- * renders the code block to a code block
+ * renders a image token to markdown
  * @returns the renderer
  */
-export default function markedCodeRenderer(code : Tokens.Code) : string {
-    return `\`\`\`${code.lang}\n${code.text}\n\`\`\``;
+export default function imageRenderer(this: Renderer, image : Tokens.Image) : string {
+    console.log(image);
+    return `![${image.text}](${image.href}${image.title ? ` "${image.title}"` : ''})`;
 }

@@ -1,9 +1,9 @@
 import { Tokens } from 'marked';
 
 /**
- * renders the code block to a code block
+ * renders the del token to markdown
  * @returns the renderer
  */
-export default function markedCodeRenderer(code : Tokens.Code) : string {
-    return `\`\`\`${code.lang}\n${code.text}\n\`\`\``;
+export default function delRenderer(del : Tokens.Del) : string {
+    return ``;
 }

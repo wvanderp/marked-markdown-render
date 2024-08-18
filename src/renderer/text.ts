@@ -1,9 +1,10 @@
 import { Tokens } from 'marked';
 
 /**
- * renders the code block to a code block
+ * renders the text token to markdown
  * @returns the renderer
  */
-export default function markedCodeRenderer(code : Tokens.Code) : string {
-    return `\`\`\`${code.lang}\n${code.text}\n\`\`\``;
+export default function textRenderer(text : Tokens.Text) : string {
+    console.log(text);
+    return text.text;
 }

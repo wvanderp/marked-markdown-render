@@ -1,9 +1,12 @@
-import { Tokens } from 'marked';
+import { Renderer, Tokens } from 'marked';
 
 /**
- * renders the code block to a code block
+ * renders the blockquote to markdown
  * @returns the renderer
  */
-export default function markedCodeRenderer(code : Tokens.Code) : string {
-    return `\`\`\`${code.lang}\n${code.text}\n\`\`\``;
+export default function blockquoteRenderer(this: Renderer, blockquote : Tokens.Blockquote) : string {
+    return blockquote.tokens
+        .map((token) => this.parser.parse([token]))
+        .reduce((acc, cur) => acc + `> ` + cur, '')
+        .trim();
 }
