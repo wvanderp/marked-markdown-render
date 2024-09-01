@@ -5,5 +5,10 @@ import { Tokens } from 'marked';
  * @returns the renderer
  */
 export default function codeRenderer(code : Tokens.Code) : string {
-    return `\`\`\`${code.lang}\n${code.text}\n\`\`\``;
+    // todo depends on the raw value
+    if (code.raw.startsWith('```')) {
+        return `\`\`\`${code.lang ? code.lang : ''}\n${code.text}\n\`\`\``;
+    }
+
+    return code.text.split('\n').map(line => `    ${line}`).join('\n') + '\n';
 }

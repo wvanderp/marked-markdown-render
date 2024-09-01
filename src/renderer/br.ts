@@ -5,5 +5,5 @@ import { Tokens } from 'marked';
  * @returns the renderer
  */
 export default function brRenderer(br : Tokens.Br) : string {
-    return ``;
+    return `\n`;
 }

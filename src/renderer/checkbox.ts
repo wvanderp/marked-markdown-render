@@ -5,5 +5,5 @@ import { Tokens } from 'marked';
  * @returns the renderer
  */
 export default function checkboxRenderer(checkbox : Tokens.Checkbox) : string {
-    return ``;
+    return `[${checkbox.checked ? 'x' : ' '}]`;
 }

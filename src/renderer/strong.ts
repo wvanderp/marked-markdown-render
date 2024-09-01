@@ -5,5 +5,12 @@ import { Tokens } from 'marked';
  * @returns the renderer
  */
 export default function strongRenderer(strong : Tokens.Strong) : string {
-    return `**${strong.text}**`;
+    switch (strong.raw[0]) {
+        case '_':
+            return `__${strong.text}__`;
+        case '*':
+            return `**${strong.text}**`;
+        default:
+            return `**${strong.text}**`;
+    }
 }

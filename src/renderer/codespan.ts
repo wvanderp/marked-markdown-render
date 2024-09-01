@@ -1,3 +1,4 @@
+import { decode } from 'html-entities';
 import { Tokens } from 'marked';
 
 /**
@@ -5,5 +6,5 @@ import { Tokens } from 'marked';
  * @returns the renderer
  */
 export default function codespanRenderer(code : Tokens.Codespan) : string {
-    return `\`${code.text}\``;
+    return `\`${decode(code.text)}\``;
 }

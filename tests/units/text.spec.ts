@@ -17,7 +17,15 @@ describe('text', () => {
     it('should render the text and keep escaped characters', () => {
         const markdown = 'Hello, \\*World\\*!';
 
-        console.log(JSON.stringify(marked.lexer(markdown), null, 2));
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
+
+    it('should render the text and keep escaped characters', () => {
+        const markdown = `if that's what you're looking for.`;
 
         const markdownMarked = marked.use(markedMarkdownRenderer());
 
