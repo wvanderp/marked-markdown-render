@@ -5,23 +5,60 @@ import { Renderer, Tokens } from 'marked';
  * @returns the renderer
  */
 export default function tableRenderer(this: Renderer, table : Tokens.Table) : string {
-    const header = table.header.map((cell) => `| ${cell.text} `).join('') + '|';
-    const separator = table.header.map((cell) => {
+    // Render all cell contents from tokens
+    const headerContents = table.header.map(cell => this.parser.parseInline(cell.tokens));
+    const rowContents = table.rows.map(row =>
+        row.map(cell => this.parser.parseInline(cell.tokens))
+    );
+
+    // Calculate column widths (max content length per column, minimum 1)
+    const columnWidths = headerContents.map((content, i) => {
+        const widths = [content.length, ...rowContents.map(row => row[i].length)];
+        return Math.max(...widths, 1);
+    });
+
+    // Render header row
+    const header = headerContents.map((content, i) =>
+        `| ${content.padEnd(columnWidths[i])} `
+    ).join('') + '|';
+
+    // Render separator row
+    const separator = table.header.map((cell, i) => {
+        const width = columnWidths[i] + 2;
         switch (cell.align) {
             case 'center':
-                return '|:--:';
+                return '|:' + '-'.repeat(width - 2) + ':';
             case 'right':
-                return '|--:';
+                return '|' + '-'.repeat(width - 1) + ':';
             case 'left':
-                return '|:--';
+                return '|:' + '-'.repeat(width - 1);
             default:
-                return '|--';
+                return '|' + '-'.repeat(width);
         }
-    } ).join('') + '|';
+    }).join('') + '|';
 
-    const rows = table.rows.map((row) => {
-        return row.map((cell) => `| ${this.parser.parseInline(cell.tokens)} `).join('') + '|';
-    }).join('\n');
+    // Render body rows with alignment-aware padding
+    const rows = rowContents.map(row =>
+        row.map((content, i) => {
+            const align = table.header[i].align;
+            const width = columnWidths[i];
+            switch (align) {
+                case 'right':
+                    return `| ${content.padStart(width)} `;
+                case 'center': {
+                    const totalPad = width - content.length;
+                    const leftPad = Math.floor(totalPad / 2);
+                    const rightPad = totalPad - leftPad;
+                    return `| ${' '.repeat(leftPad)}${content}${' '.repeat(rightPad)} `;
+                }
+                default:
+                    return `| ${content.padEnd(width)} `;
+            }
+        }).join('') + '|'
+    ).join('\n');
 
-    return `${header}\n${separator}\n${rows}\n`;
+    if (rows) {
+        return `${header}\n${separator}\n${rows}`;
+    }
+    return `${header}\n${separator}`;
 }
