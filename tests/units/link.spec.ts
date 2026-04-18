@@ -50,4 +50,24 @@ describe('link', () => {
 
         expect(result).toEqual(markdown);
     });
+
+    it('renders reflinks using the reference label', () => {
+        const markdown = '[foo][bar]\n\n[bar]: /url "title"';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
+
+    it('renders complex reflinks instead of converting them to inline links', () => {
+        const markdown = '[foo <bar attr="][ref]">\n\n[ref]: /uri';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
 });
