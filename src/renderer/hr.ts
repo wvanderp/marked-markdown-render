@@ -6,6 +6,7 @@ import { Tokens } from 'marked';
  */
 export default function hrRenderer(hr : Tokens.Hr) : string {
     // TODO: cant implement without looking at the raw value
+    // This is allowed for now, but in the future we should find a way to implement this without looking at the raw value
     const firstChar = hr.raw[0];
     switch (firstChar) {
         case '*':

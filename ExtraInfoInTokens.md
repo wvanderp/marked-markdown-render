@@ -14,6 +14,10 @@ but the parsed tokens does not indicate how many empty lines should be added. so
 when the link is a reference link, the AST tokens does not contain original reference link. 
 it only contains the url reference. so the renderer should be able to recreate the original reference link.
 
+### autolink angle brackets
+
+the AST tokens does not distinguish between `<http://example.com>` (angle bracket autolink) and `http://example.com` (bare autolink). both produce identical tokens. the renderer defaults to bare autolink form without angle brackets.
+
 ## list
 
 ### the number used in the ordered list

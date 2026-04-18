@@ -23,4 +23,34 @@ describe('Image', () => {
 
         expect(result).toEqual(markdown);
     });
+
+    it('renders nested inline content inside alt text', () => {
+        const markdown = '![foo *bar*](train.jpg)';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
+
+    it('escapes image destinations that need parentheses', () => {
+        const markdown = '![x](foo\\(and\\(bar\\))';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
+
+    it('wraps spaced image destinations in angle brackets', () => {
+        const markdown = '![x](<https://example.com/a b>)';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
 });

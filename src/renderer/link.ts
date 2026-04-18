@@ -1,17 +1,22 @@
-import { Tokens } from 'marked';
-import { decode } from 'html-entities';
+import { Renderer, Tokens } from 'marked';
+import { formatLinkDestination, formatLinkTitle, renderInlineTokens } from './linkSyntax';
 /**
  * renders the link to markdown
  * @returns the renderer
  */
-export default function linkRenderer(link : Tokens.Link) : string {
-    // detect auto links
-    if (link.raw[0] === '<') {
-        return `<${link.href}>`;
+export default function linkRenderer(this: Renderer, link : Tokens.Link) : string {
+    const text = renderInlineTokens(this, link.tokens) || link.text;
+
+    // standard links have a 'title' property (null or string), autolinks do not
+    if ('title' in link) {
+        return `[${text}](${formatLinkDestination(link.href)}${formatLinkTitle(link.title)})`;
     }
-    // detect hidden auto links
-    if (link.raw[0] !== '[') {
-        return link.href;
+
+    // email autolink: href has mailto: prefix that text doesn't
+    if (link.href === 'mailto:' + text) {
+        return `<${text}>`;
     }
-    return `[${link.text}](${link.href}${link.title ? ` "${decode(link.title)}"` : ''})`;
+
+    // URL autolink
+    return link.href;
 }

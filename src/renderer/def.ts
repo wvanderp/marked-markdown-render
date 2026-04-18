@@ -1,9 +1,10 @@
 import { Tokens } from 'marked';
+import { formatLinkDestination, formatLinkTitle } from './linkSyntax';
 
 /**
  * renders the def token to markdown
  * @returns the renderer
  */
 export default function defRenderer(def : Tokens.Def) : string {
-    return ``;
+    return `[${def.tag}]: ${formatLinkDestination(def.href)}${formatLinkTitle(def.title)}`;
 }

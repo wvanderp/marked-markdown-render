@@ -10,6 +10,7 @@ import strongRenderer from './renderer/strong';
 import codespanRenderer from './renderer/codespan';
 import brRenderer from './renderer/br';
 import checkboxRenderer from './renderer/checkbox';
+import defRenderer from './renderer/def';
 import hrRenderer from './renderer/hr';
 import spaceRenderer from './renderer/space';
 import listRenderer from './renderer/list';
@@ -30,6 +31,7 @@ export default function markedMarkdownRenderer() : MarkedExtension {
             checkbox: checkboxRenderer,
             code: codeRenderer,
             codespan: codespanRenderer,
+            def: defRenderer,
             del: delRenderer,
             em: emRenderer,
             heading: headingRenderer,
