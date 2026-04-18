@@ -13,21 +13,27 @@ function renderList(this: Renderer, list: Tokens.List): string {
     let nextOrderedValue = start;
 
     const renderedItems = list.items.map((listItem) => {
-        let marker;
+        let markerPrefix;
 
         if (list.ordered) {
             const itemValue = typeof listItem.value === 'number' ? listItem.value : nextOrderedValue;
 
-            marker = `${itemValue}${list.orderChar || '.'} `;
+            markerPrefix = `${itemValue}${list.orderChar || '.'}`;
             nextOrderedValue = itemValue + 1;
         } else {
-            marker = `${list.bulletChar || '*'} `;
+            markerPrefix = `${list.bulletChar || '*'}`;
         }
 
         let checkbox = '';
         if (listItem.task) {
             checkbox = listItem.checked ? '[x] ' : '[ ] ';
         }
+
+        const inferredContinuationIndent = getContinuationIndentFromItemText(listItem.text);
+        const markerSpacing = inferredContinuationIndent
+            ? Math.max(1, inferredContinuationIndent - markerPrefix.length - checkbox.length)
+            : 1;
+        const marker = `${markerPrefix}${' '.repeat(markerSpacing)}`;
 
         const itemContentTokens = listItem.task && listItem.tokens[0]?.type === 'checkbox'
             ? listItem.tokens.slice(1)
@@ -39,7 +45,8 @@ function renderList(this: Renderer, list: Tokens.List): string {
             return `${marker}${checkbox}`.trimEnd();
         }
 
-        const indentedContent = indentContinuationLines(content, 2);
+        const continuationIndent = inferredContinuationIndent ?? (marker.length + checkbox.length);
+        const indentedContent = indentContinuationLines(content, continuationIndent);
 
         return `${marker}${checkbox}${indentedContent}`;
     });
@@ -135,4 +142,19 @@ function indentContinuationLines(content: string, continuationIndent: number): s
             return `${indent}${line}`;
         })
         .join('\n');
+}
+
+function getContinuationIndentFromItemText(listItemText: string): number | undefined {
+    const continuationLineIndents = listItemText
+        .split('\n')
+        .slice(1)
+        .filter((line) => line.length > 0)
+        .map((line) => line.match(/^\s*/)?.[0].length ?? 0)
+        .filter((indent) => indent > 0);
+
+    if (continuationLineIndents.length === 0) {
+        return undefined;
+    }
+
+    return Math.min(...continuationLineIndents);
 }
