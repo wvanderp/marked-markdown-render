@@ -11,7 +11,7 @@ describe('Code', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('should render the code block when the language is not specified', () => {
@@ -21,7 +21,7 @@ describe('Code', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('should render indented code blocks', () => {
@@ -41,6 +41,6 @@ describe('Code', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 });

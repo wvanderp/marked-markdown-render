@@ -11,7 +11,7 @@ describe('text', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('should render the text and keep escaped characters', () => {
@@ -21,7 +21,7 @@ describe('text', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('should render the text and keep escaped characters', () => {
@@ -31,6 +31,6 @@ describe('text', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 });

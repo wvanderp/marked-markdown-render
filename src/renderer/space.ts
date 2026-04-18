@@ -10,5 +10,5 @@ import { Tokens } from 'marked';
  * @returns the renderer
  */
 export default function spaceRenderer(space : Tokens.Space) : string {
-    return '\n'.repeat(space.lines);
+    return '\n'.repeat(space.lines - 1);
 }

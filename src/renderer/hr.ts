@@ -9,7 +9,8 @@ export default function hrRenderer(hr : Tokens.Hr) : string {
         case '*':
         case '-':
         case '_':
-            return `${hr.character.repeat(3)}`;
+            return `${hr.character.repeat(3)}
+`;
         default:
             throw new Error(`Unknown hr type: ${hr.character}`);
     }

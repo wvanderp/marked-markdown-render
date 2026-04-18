@@ -11,7 +11,7 @@ describe('space', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('should render three newlines between paragraphs (two blank lines)', () => {
@@ -21,7 +21,7 @@ describe('space', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('should render four newlines between paragraphs (three blank lines)', () => {
@@ -31,7 +31,7 @@ describe('space', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('should handle standard block separation (no space token, absorbed by lexer)', () => {
@@ -41,6 +41,6 @@ describe('space', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 });

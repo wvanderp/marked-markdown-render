@@ -58,7 +58,7 @@ export default function tableRenderer(this: Renderer, table : Tokens.Table) : st
     ).join('\n');
 
     if (rows) {
-        return `${header}\n${separator}\n${rows}`;
+        return `${header}\n${separator}\n${rows}\n`;
     }
-    return `${header}\n${separator}`;
+    return `${header}\n${separator}\n`;
 }

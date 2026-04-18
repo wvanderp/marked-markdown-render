@@ -49,6 +49,19 @@ Missing detail:
 Because of this, the renderer can only emit a normalized reference label when reconstructing from tokens. The exact original label casing cannot be reconstructed without using forbidden source text fields.
 
 
+## thematic breaks (hr)
+
+The hr token only preserves the `character` property (`*`, `-`, or `_`), which identifies which character was used for the thematic break. All other formatting details are lost.
+
+Missing details:
+- The number of characters used (e.g. `***` vs `_____________________________________`)
+- Leading spaces before the characters (e.g. ` ***` or `   ***`)
+- Spaces between the characters (e.g. `* * *` or `-     -      -      -`)
+- Trailing spaces after the characters (e.g. `- - - -    `)
+
+Because of this, the renderer always emits the minimal valid thematic break form: three consecutive characters with no spaces (e.g. `***`, `---`, `___`). The exact original formatting cannot be reconstructed from the token. This affects CommonMark examples 47, 50, 51, 52, 53, 54, 60, and 61.
+
+
 ## images
 
 The image token does not preserve all source-form choices for destinations and reference-style syntax.

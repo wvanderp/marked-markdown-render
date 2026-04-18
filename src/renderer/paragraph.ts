@@ -5,5 +5,5 @@ import { Renderer, Tokens } from 'marked';
  * @returns the renderer
  */
 export default function paragraphRenderer(this: Renderer, paragraph : Tokens.Paragraph) : string {
-    return this.parser.parseInline(paragraph.tokens);
+    return this.parser.parseInline(paragraph.tokens) + '\n';
 }

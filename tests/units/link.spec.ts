@@ -11,7 +11,7 @@ describe('link', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('escapes destinations that need parentheses', () => {
@@ -21,16 +21,16 @@ describe('link', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('normalizes empty destinations and wraps spaced destinations in angle brackets', () => {
         const markdownMarked = marked.use(markedMarkdownRenderer());
 
-        expect(markdownMarked('[link]()')).toEqual('[link]()');
-        expect(markdownMarked('[link](<>)')).toEqual('[link]()');
-        expect(markdownMarked('[](<>)')).toEqual('[]()');
-        expect(markdownMarked('[link](</my uri>)')).toEqual('[link](</my uri>)');
+        expect(markdownMarked('[link]()')).toEqual('[link]()\n');
+        expect(markdownMarked('[link](<>)')).toEqual('[link]()\n');
+        expect(markdownMarked('[](<>)')).toEqual('[]()\n');
+        expect(markdownMarked('[link](</my uri>)')).toEqual('[link](</my uri>)\n');
     });
 
     it('renders email autolinks with angle brackets', () => {
@@ -40,7 +40,7 @@ describe('link', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders bare autolinks without angle brackets', () => {
@@ -50,7 +50,7 @@ describe('link', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders bare email autolinks without mailto prefix', () => {
@@ -60,7 +60,7 @@ describe('link', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders reflinks using the reference label', () => {
@@ -70,7 +70,7 @@ describe('link', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders complex reflinks instead of converting them to inline links', () => {
@@ -80,6 +80,6 @@ describe('link', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 });

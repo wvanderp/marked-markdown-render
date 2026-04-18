@@ -11,7 +11,7 @@ describe('Image', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('should render the image to a image with title', () => {
@@ -21,7 +21,7 @@ describe('Image', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders nested inline content inside alt text', () => {
@@ -31,7 +31,7 @@ describe('Image', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('escapes image destinations that need parentheses', () => {
@@ -41,7 +41,7 @@ describe('Image', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('wraps spaced image destinations in angle brackets', () => {
@@ -51,7 +51,7 @@ describe('Image', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders reflink images using the reference label', () => {
@@ -61,7 +61,7 @@ describe('Image', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders shortcut reflink images when label matches alt text', () => {
@@ -71,6 +71,6 @@ describe('Image', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 });

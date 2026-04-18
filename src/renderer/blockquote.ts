@@ -11,7 +11,7 @@ export default function blockquoteRenderer(this: Renderer, blockquote : Tokens.B
                 return '';
             }
 
-            return this.parser.parse([token]);
+            return this.parser.parse([token]).replace(/\n$/, '');
         })
         .flatMap((token) => token.split('\n'));
 
@@ -24,5 +24,5 @@ export default function blockquoteRenderer(this: Renderer, blockquote : Tokens.B
 
     return renderedLines
         .map((line) => line.length === 0 ? '>' : `> ${line}`)
-        .join('\n');
+        .join('\n') + '\n';
 }

@@ -11,7 +11,7 @@ describe('Definition', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders spaced destinations in definitions with angle brackets', () => {
@@ -21,6 +21,6 @@ describe('Definition', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 });

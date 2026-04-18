@@ -11,7 +11,7 @@ describe('List', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders ordered list delimiter characters from tokens', () => {
@@ -21,7 +21,7 @@ describe('List', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders ordered list with non-sequential numbers', () => {
@@ -31,6 +31,6 @@ describe('List', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 });

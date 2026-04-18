@@ -9,5 +9,5 @@ export default function codeRenderer(code : Tokens.Code) : string {
         return code.text.replace(/\n$/, '').split('\n').map(line => `    ${line}`).join('\n') + '\n';
     }
 
-    return `\`\`\`${code.lang ? code.lang : ''}\n${code.text}\n\`\`\``;
+    return `\`\`\`${code.lang ? code.lang : ''}\n${code.text}\n\`\`\`\n`;
 }

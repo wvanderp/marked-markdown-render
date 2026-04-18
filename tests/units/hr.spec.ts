@@ -11,7 +11,7 @@ describe('hr', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders dash thematic breaks', () => {
@@ -21,7 +21,7 @@ describe('hr', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders underscore thematic breaks', () => {
@@ -31,6 +31,6 @@ describe('hr', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 });

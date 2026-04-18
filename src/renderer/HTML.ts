@@ -5,5 +5,5 @@ import { Tokens } from 'marked';
  * @returns the renderer
  */
 export default function HTMLRenderer(html : Tokens.HTML) : string {
-    return html.text;
+    return html.text + '\n';
 }

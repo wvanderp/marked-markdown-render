@@ -52,7 +52,7 @@ function renderList(this: Renderer, list: Tokens.List): string {
     });
 
     if (renderedItems.length <= 1) {
-        return renderedItems.join('');
+        return renderedItems.join('') + '\n';
     }
 
     let markdown = '';
@@ -67,7 +67,7 @@ function renderList(this: Renderer, list: Tokens.List): string {
         markdown += getListItemSeparator(list.items[index]);
     });
 
-    return markdown;
+    return markdown + '\n';
 }
 
 function getListItemSeparator(previousItem: Tokens.ListItem): string {

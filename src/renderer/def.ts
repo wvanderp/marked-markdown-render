@@ -22,7 +22,5 @@ function hasFollowingDefinitionToken(def: Tokens.Def, parser: { options?: { toke
  * @returns the renderer
  */
 export default function defRenderer(this: { options?: { tokenizer?: { lexer?: { tokens?: Tokens.Generic[] } } } }, def : Tokens.Def) : string {
-    const separator = hasFollowingDefinitionToken(def, this) ? '\n' : '';
-
-    return `[${def.tag}]: ${formatLinkDestination(def.href)}${formatLinkTitle(def.title)}${separator}`;
+    return `[${def.tag}]: ${formatLinkDestination(def.href)}${formatLinkTitle(def.title)}\n`;
 }

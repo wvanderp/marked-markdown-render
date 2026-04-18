@@ -11,7 +11,7 @@ describe('Heading', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown + '\n\n');
+        expect(result).toEqual(markdown + '\n');
     });
 
     it('renders setext headings', () => {
@@ -21,6 +21,6 @@ describe('Heading', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown + '\n\n');
+        expect(result).toEqual(markdown + '\n');
     });
 });
