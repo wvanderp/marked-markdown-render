@@ -5,13 +5,6 @@ The AST tokens does not contain all the information fully recreated the original
 this document contains some examples of missing information.
 
 
-## space
-
-the space token seem to be a token to add space between elements. and should be rendered as empty lines in markdown.
-but the parsed tokens does not indicate how many empty lines should be added. so it should be up to the renderer to decide how many empty lines should be added.
-
-
-
 ## table
 
 The table token does not preserve:

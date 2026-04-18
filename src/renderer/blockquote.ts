@@ -5,16 +5,24 @@ import { Renderer, Tokens } from 'marked';
  * @returns the renderer
  */
 export default function blockquoteRenderer(this: Renderer, blockquote : Tokens.Blockquote) : string {
-    console.log(blockquote.tokens
-        .map((token) => this.parser.parse([token])));
-    return blockquote.tokens
+    const renderedLines = blockquote.tokens
         .map((token) => {
             if (token.type === 'space') {
                 return '';
             }
+
             return this.parser.parse([token]);
         })
-        .flatMap((token) => token.split('\n'))
-        .reduce((acc, cur) => acc + `> ` + cur + '\n', '')
-        .trim();
+        .flatMap((token) => token.split('\n'));
+
+    // blockquote.text preserves trailing newline-based empty quote lines.
+    const expectedLineCount = blockquote.text.split('\n').length;
+
+    while (renderedLines.length < expectedLineCount) {
+        renderedLines.push('');
+    }
+
+    return renderedLines
+        .map((line) => line.length === 0 ? '>' : `> ${line}`)
+        .join('\n');
 }
