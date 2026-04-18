@@ -37,3 +37,15 @@ Missing detail:
 - Whether an empty destination was written as `[]()` or `[](<>)` (both parse to `href = ""`)
 
 Because of this, the renderer canonicalizes empty link destinations to `()`. The exact `(<>)` source form cannot be reconstructed from tokens without using forbidden source text fields.
+
+
+## lists
+
+The list and list_item tokens do not preserve indentation-style metadata for continuation blocks.
+
+Missing details include:
+- Whether continuation indentation after a list marker used tabs or spaces
+- The exact indentation width/style used for loose-paragraph continuation lines inside a list item
+- Whether leading indentation before the list marker was stylistic and should be preserved in a byte-exact round trip
+
+Because of this, two inputs that parse to equivalent list tokens can differ in source bytes (for example CommonMark Tabs example 4: `- foo` followed by a tab-indented continuation paragraph). The renderer can emit a valid equivalent list structure, but cannot always reconstruct the exact original tab/space continuation form from tokens alone.
