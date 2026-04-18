@@ -1,63 +1,110 @@
-import { Token, Renderer, Tokens } from 'marked';
+import { Renderer, Tokens } from 'marked';
 
 /**
  * renders the list token to markdown
  * @returns the renderer
  */
 export default function listRenderer(this: Renderer, list : Tokens.List) : string {
-    return renderMarkdownList([list]).replace(/\n$/, '');
+    return renderList.call(this, list);
 }
 
+function renderList(this: Renderer, list: Tokens.List): string {
+    const start = typeof list.start === 'number' ? list.start : 1;
+    let nextOrderedValue = start;
 
-function renderMarkdownList(ast: Tokens.List[], indent = 0): string {
-    let markdown = '';
+    const renderedItems = list.items.map((listItem) => {
+        let marker;
 
-    ast.forEach((item) => {
-        if (item.type === 'list') {
-            const currentIndent = indent;
-            const start = typeof item.start === 'number' ? item.start : 1;
-            let nextOrderedValue = start;
+        if (list.ordered) {
+            const itemValue = typeof listItem.value === 'number' ? listItem.value : nextOrderedValue;
 
-            item.items.forEach((listItem) => {
-                let prefix;
-                
-                if (item.ordered) {
-                    const itemValue = typeof listItem.value === 'number' ? listItem.value : nextOrderedValue;
-
-                    prefix = `${itemValue}${item.orderChar || '.'} `;
-                    nextOrderedValue = itemValue + 1;
-                } else {
-                    prefix = `${item.bulletChar || '*'} `;
-                }
-
-                let checkbox = '';
-                if (listItem.task) {
-                    checkbox = listItem.checked ? '[x] ' : '[ ] ';
-                }
-
-                markdown += ' '.repeat(currentIndent) + prefix + checkbox + renderMarkdownText(listItem.tokens) + '\n';
-                
-                // Handle nested lists within list items
-                listItem.tokens.forEach((token) => {
-                    if (token.type === 'list') {
-                        markdown += renderMarkdownList([token as Tokens.List], currentIndent + 2);
-                    }
-                });
-            });
+            marker = `${itemValue}${list.orderChar || '.'} `;
+            nextOrderedValue = itemValue + 1;
+        } else {
+            marker = `${list.bulletChar || '*'} `;
         }
+
+        let checkbox = '';
+        if (listItem.task) {
+            checkbox = listItem.checked ? '[x] ' : '[ ] ';
+        }
+
+        const itemContentTokens = listItem.task && listItem.tokens[0]?.type === 'checkbox'
+            ? listItem.tokens.slice(1)
+            : listItem.tokens;
+
+        const content = renderListItemContent.call(this, itemContentTokens);
+
+        if (!content) {
+            return `${marker}${checkbox}`;
+        }
+
+        const indentedContent = indentContinuationLines(content, 2);
+
+        return `${marker}${checkbox}${indentedContent}`;
     });
 
-    return markdown;
+    return renderedItems.join(list.loose ? '\n\n' : '\n');
 }
 
-function renderMarkdownText(tokens: Token[]): string {
-    let text = '';
+function renderListItemContent(this: Renderer, tokens: Tokens.ListItem['tokens']): string {
+    let content = '';
+    let pendingLines = 0;
+
     tokens.forEach((token) => {
-        if (token.type === 'text') {
-            text += token.text;
-        } else if (token.type === 'space') {
-            text += '\n\n'; // Handle explicit spaces for items like "Some text that should be aligned with the above item."
+        if (token.type === 'space') {
+            pendingLines = token.lines ?? 2;
+            return;
         }
+
+        const rendered = renderListItemToken.call(this, token).trimEnd();
+
+        if (!rendered) {
+            return;
+        }
+
+        if (content.length > 0) {
+            content += '\n'.repeat(pendingLines > 0 ? pendingLines : 1);
+        }
+
+        content += rendered;
+        pendingLines = 0;
     });
-    return text;
+
+    return content;
+}
+
+function renderListItemToken(this: Renderer, token: Tokens.Generic): string {
+    if (token.type === 'paragraph') {
+        return this.parser.parseInline(token.tokens ?? []);
+    }
+
+    if (token.type === 'text') {
+        if (token.tokens) {
+            return this.parser.parseInline(token.tokens);
+        }
+
+        return token.text;
+    }
+
+    if (token.type === 'list') {
+        return renderList.call(this, token as Tokens.List);
+    }
+
+    return this.parser.parse([token]).trimEnd();
+}
+
+function indentContinuationLines(content: string, continuationIndent: number): string {
+    const indent = ' '.repeat(continuationIndent);
+
+    return content
+        .split('\n')
+        .map((line, index) => {
+            if (index === 0 || line.length === 0) {
+                return line;
+            }
+
+            return `${indent}${line}`;
+        })
+        .join('\n');
 }
