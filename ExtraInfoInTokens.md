@@ -16,7 +16,14 @@ it only contains the url reference. so the renderer should be able to recreate t
 
 ### autolink angle brackets
 
-the AST tokens does not distinguish between `<http://example.com>` (angle bracket autolink) and `http://example.com` (bare autolink). both produce identical tokens. the renderer defaults to bare autolink form without angle brackets.
+the `link` token now contains `autolink?: boolean`, which allows the renderer to distinguish autolinks from normal markdown links.
+
+however, this is still not enough to fully reconstruct the original autolink syntax:
+
+- `<http://example.com>` and `http://example.com` both produce `type: 'link'` with `autolink: true` and the same `href`/`text` values.
+- `<user@example.com>` and `user@example.com` both produce `type: 'link'` with `autolink: true` and the same visible text after removing `mailto:` from `href`.
+
+without using `Tokens.raw`, the renderer cannot know whether angle brackets were present in the original markdown, so it must choose a canonical output form. this renderer chooses angle-bracket autolinks.
 
 ## list
 
