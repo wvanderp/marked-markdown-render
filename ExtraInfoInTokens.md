@@ -39,6 +39,27 @@ Missing detail:
 Because of this, the renderer canonicalizes empty link destinations to `()`. The exact `(<>)` source form cannot be reconstructed from tokens without using forbidden source text fields.
 
 
+## link reference definitions
+
+The definition token does not preserve the original source casing of the reference label.
+
+Missing detail:
+- Whether the original definition label used different case, for example `[BAR]: /url` (the token stores `tag = "bar"`)
+
+Because of this, the renderer can only emit a normalized reference label when reconstructing from tokens. The exact original label casing cannot be reconstructed without using forbidden source text fields.
+
+
+## images
+
+The image token does not preserve all source-form choices for destinations and reference-style syntax.
+
+Missing details:
+- Whether an inline destination without whitespace was written in bracketed form, for example `![foo](<url>)` vs `![foo](url)` (both parse to `href = "url"`)
+- Whether a matching reference-style image used shortcut syntax `![foo]` or collapsed syntax `![foo][]` (both parse to reflink image tokens with equivalent fields)
+
+Because of this, the renderer must choose a canonical form for these cases and cannot always reproduce byte-exact image syntax from tokens alone.
+
+
 ## lists
 
 The list and list_item tokens do not preserve indentation-style metadata for continuation blocks.

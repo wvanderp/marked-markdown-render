@@ -53,4 +53,24 @@ describe('Image', () => {
 
         expect(result).toEqual(markdown);
     });
+
+    it('renders reflink images using the reference label', () => {
+        const markdown = '![foo][bar]\n\n[bar]: /url';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
+
+    it('renders shortcut reflink images when label matches alt text', () => {
+        const markdown = '![foo]\n\n[foo]: /url "title"';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
 });
