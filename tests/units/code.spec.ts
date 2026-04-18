@@ -23,4 +23,24 @@ describe('Code', () => {
 
         expect(result).toEqual(markdown);
     });
+
+    it('should render indented code blocks', () => {
+        const markdown = '    console.log("Hello, World!");\n';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
+
+    it('should handle having a language specified', () => {
+        const markdown = '```typescript\nconsole.log("Hello, World!");\n```';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());    
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
 });
