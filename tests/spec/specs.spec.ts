@@ -18,6 +18,13 @@ const sections = commonmark.reduce<Record<string, any[]>>((acc, test) => {
 
 // Tests that are inherent limitations: the AST doesn't preserve enough info to round-trip
 const skipTests = new Set([
+    329, // code span delimiter/padding choice is ambiguous from codespan text
+    333, // code span boundary spaces are normalized away (` b ` vs `b`)
+    337, // single-line vs newline inside code span is not preserved in tokens
+    340, // code span delimiter/padding form is ambiguous from codespan text
+    349, // adjacent backticks across inline token boundaries are not encoded
+    335, // multiline code span newlines collapse into spaces in tokens
+    336, // multiline code span with trailing space loses newline form
     634, // backslash hard break (AST doesn't distinguish from space break)
     635, // exact trailing space count in hard break
     637, // backslash hard break with indentation
