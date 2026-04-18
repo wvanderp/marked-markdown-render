@@ -20,13 +20,7 @@ the AST tokens does not distinguish between `<http://example.com>` (angle bracke
 
 ## list
 
-### the number used in the ordered list
 
-the AST tokens does not contain the number used in the ordered list. so the renderer should be able to recreate the original number.
-
-### the character used in the unordered list
-
-the ast does not contain whether the original text used `*` or `-` or `+` to create the unordered list. so the renderer should be able to recreate the original character used in the unordered list.
 
 ## code block
 
@@ -34,15 +28,3 @@ the ast does not contain whether the original text used `*` or `-` or `+` to cre
 
 the AST tokens does not contain the original code block type. so the renderer should be able to recreate the original code block type.
 
-## hr
-
-### the character used in the hr
-
-we cant know what character was used in the hr. so the renderer should be able to recreate the original character used in the hr.
-some markdown parsers use `*` or `-` or `_` to create hr. so the renderer should be able to recreate the original character used in the hr.
-
-## heading
-
-### the type of heading
-
-we cant know what type of heading was used. it can be the hash `#` or the underline `=` or `-`. so the renderer should be able to recreate the original type of heading.

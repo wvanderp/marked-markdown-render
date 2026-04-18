@@ -5,15 +5,12 @@ import { Tokens } from 'marked';
  * @returns the renderer
  */
 export default function hrRenderer(hr : Tokens.Hr) : string {
-    // TODO: cant implement without looking at the raw value
-    // This is allowed for now, but in the future we should find a way to implement this without looking at the raw value
-    const firstChar = hr.raw[0];
-    switch (firstChar) {
+    switch (hr.character) {
         case '*':
         case '-':
         case '_':
-            return `${firstChar.repeat(3)}`;
+            return `${hr.character.repeat(3)}`;
         default:
-            throw new Error(`Unknown hr type: ${firstChar}`);
+            throw new Error(`Unknown hr type: ${hr.character}`);
     }
 }

@@ -3,9 +3,9 @@ import { describe, it, expect } from 'vitest';
 import { marked } from 'marked';
 import markedMarkdownRenderer from '../../src';
 
-describe('Blockquote', () => {
-    it('should render the blockquote to a blockquote', () => {
-        const markdown = '> Hello, World!';
+describe('del', () => {
+    it('should render the strikethrough to a strikethrough', () => {
+        const markdown = '~~Hello, World!~~';
 
         const markdownMarked = marked.use(markedMarkdownRenderer());
 

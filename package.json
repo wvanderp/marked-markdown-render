@@ -14,7 +14,7 @@
   "license": "MIT",
   "description": "",
   "devDependencies": {
-    "marked": "^18.0.2",
+    "marked": "file:../fork/marked",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",
     "vitest": "4.1.4",

@@ -3,9 +3,9 @@ import { describe, it, expect } from 'vitest';
 import { marked } from 'marked';
 import markedMarkdownRenderer from '../../src';
 
-describe('Blockquote', () => {
-    it('should render the blockquote to a blockquote', () => {
-        const markdown = '> Hello, World!';
+describe('TableRow', () => {
+    it('should render the table row to a table row', () => {
+        const markdown = '| Cell | Cell |';
 
         const markdownMarked = marked.use(markedMarkdownRenderer());
 

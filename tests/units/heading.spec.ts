@@ -3,14 +3,24 @@ import { describe, it, expect } from 'vitest';
 import { marked } from 'marked';
 import markedMarkdownRenderer from '../../src';
 
-describe('Blockquote', () => {
-    it('should render the blockquote to a blockquote', () => {
-        const markdown = '> Hello, World!';
+describe('Heading', () => {
+    it('renders atx headings', () => {
+        const markdown = '# Atx';
 
         const markdownMarked = marked.use(markedMarkdownRenderer());
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n\n');
+    });
+
+    it('renders setext headings', () => {
+        const markdown = 'Setext\n======';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown + '\n\n');
     });
 });

@@ -1,5 +1,4 @@
-import { Renderer, Tokens } from 'marked';
-import listItemRenderer from './listItem';
+import { Token, Renderer, Tokens } from 'marked';
 
 /**
  * renders the list token to markdown
@@ -10,19 +9,21 @@ export default function listRenderer(this: Renderer, list : Tokens.List) : strin
 }
 
 
-function renderMarkdownList(ast, indent = 0) {
+function renderMarkdownList(ast: Tokens.List[], indent = 0): string {
     let markdown = '';
 
-    ast.forEach(item => {
+    ast.forEach((item) => {
         if (item.type === 'list') {
-            let currentIndent = indent;
+            const currentIndent = indent;
             item.items.forEach((listItem, index) => {
                 let prefix;
                 
                 if (item.ordered) {
-                    prefix = `${(item.start || index + 1)}. `;
+                    const start = typeof item.start === 'number' ? item.start : 1;
+
+                    prefix = `${start + index}${item.orderChar || '.'} `;
                 } else {
-                    prefix = '* ';
+                    prefix = `${item.bulletChar || '*'} `;
                 }
 
                 let checkbox = '';
@@ -33,9 +34,9 @@ function renderMarkdownList(ast, indent = 0) {
                 markdown += ' '.repeat(currentIndent) + prefix + checkbox + renderMarkdownText(listItem.tokens) + '\n';
                 
                 // Handle nested lists within list items
-                listItem.tokens.forEach(token => {
+                listItem.tokens.forEach((token) => {
                     if (token.type === 'list') {
-                        markdown += renderMarkdownList([token], currentIndent + 2);
+                        markdown += renderMarkdownList([token as Tokens.List], currentIndent + 2);
                     }
                 });
             });
@@ -45,9 +46,9 @@ function renderMarkdownList(ast, indent = 0) {
     return markdown;
 }
 
-function renderMarkdownText(tokens) {
+function renderMarkdownText(tokens: Token[]): string {
     let text = '';
-    tokens.forEach(token => {
+    tokens.forEach((token) => {
         if (token.type === 'text') {
             text += token.text;
         } else if (token.type === 'space') {

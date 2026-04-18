@@ -4,8 +4,28 @@ import { marked } from 'marked';
 import markedMarkdownRenderer from '../../src';
 
 describe('hr', () => {
-    it('should render the hr back to hr', () => {
-        const markdown = '***\n---\n___\n';
+    it('renders star thematic breaks', () => {
+        const markdown = '***';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
+
+    it('renders dash thematic breaks', () => {
+        const markdown = '---';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
+
+    it('renders underscore thematic breaks', () => {
+        const markdown = '___';
 
         const markdownMarked = marked.use(markedMarkdownRenderer());
 
