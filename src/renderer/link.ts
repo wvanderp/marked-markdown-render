@@ -39,6 +39,10 @@ export default function linkRenderer(this: Renderer, link : Tokens.Link) : strin
     const text = renderInlineTokens(this, link.tokens) || link.text;
 
     if (link.linkStyle === 'barelink') {
+        if (link.href === 'mailto:' + text) {
+            return text;
+        }
+
         return link.href;
     }
 

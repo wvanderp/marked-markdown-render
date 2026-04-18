@@ -53,6 +53,16 @@ describe('link', () => {
         expect(result).toEqual(markdown);
     });
 
+    it('renders bare email autolinks without mailto prefix', () => {
+        const markdown = 'foo@bar.example.com';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
+
     it('renders reflinks using the reference label', () => {
         const markdown = '[foo][bar]\n\n[bar]: /url "title"';
 
