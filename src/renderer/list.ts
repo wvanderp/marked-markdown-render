@@ -15,13 +15,17 @@ function renderMarkdownList(ast: Tokens.List[], indent = 0): string {
     ast.forEach((item) => {
         if (item.type === 'list') {
             const currentIndent = indent;
-            item.items.forEach((listItem, index) => {
+            const start = typeof item.start === 'number' ? item.start : 1;
+            let nextOrderedValue = start;
+
+            item.items.forEach((listItem) => {
                 let prefix;
                 
                 if (item.ordered) {
-                    const start = typeof item.start === 'number' ? item.start : 1;
+                    const itemValue = typeof listItem.value === 'number' ? listItem.value : nextOrderedValue;
 
-                    prefix = `${start + index}${item.orderChar || '.'} `;
+                    prefix = `${itemValue}${item.orderChar || '.'} `;
+                    nextOrderedValue = itemValue + 1;
                 } else {
                     prefix = `${item.bulletChar || '*'} `;
                 }
