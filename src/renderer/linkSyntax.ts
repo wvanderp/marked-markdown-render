@@ -23,7 +23,11 @@ export function renderInlineTokens(renderer: Renderer, tokens?: Token[]): string
 }
 
 export function formatLinkDestination(href: string): string {
-    if (href.length === 0 || /\s/.test(href)) {
+    if (href.length === 0) {
+        return '';
+    }
+
+    if (/\s/.test(href)) {
         return `<${escapeBracketedDestination(href)}>`;
     }
 

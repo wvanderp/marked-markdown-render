@@ -27,3 +27,13 @@ Missing details include:
 - Whether neighboring inline tokens ended/started with backticks, which can force a different codespan delimiter length at render time (for example CommonMark example 349)
 
 Because of this, the renderer can only emit a valid equivalent codespan, not always the exact original bytes, for some CommonMark examples (for example 329, 333, 335, 336, 337, 340, and 349 in the CommonMark suite used by this repository).
+
+
+## links
+
+The link token does not preserve the original empty-destination delimiter style.
+
+Missing detail:
+- Whether an empty destination was written as `[]()` or `[](<>)` (both parse to `href = ""`)
+
+Because of this, the renderer canonicalizes empty link destinations to `()`. The exact `(<>)` source form cannot be reconstructed from tokens without using forbidden source text fields.

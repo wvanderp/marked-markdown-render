@@ -24,10 +24,12 @@ describe('link', () => {
         expect(result).toEqual(markdown);
     });
 
-    it('wraps empty and spaced destinations in angle brackets', () => {
+    it('normalizes empty destinations and wraps spaced destinations in angle brackets', () => {
         const markdownMarked = marked.use(markedMarkdownRenderer());
 
-        expect(markdownMarked('[link](<>)')).toEqual('[link](<>)');
+        expect(markdownMarked('[link]()')).toEqual('[link]()');
+        expect(markdownMarked('[link](<>)')).toEqual('[link]()');
+        expect(markdownMarked('[](<>)')).toEqual('[]()');
         expect(markdownMarked('[link](</my uri>)')).toEqual('[link](</my uri>)');
     });
 
