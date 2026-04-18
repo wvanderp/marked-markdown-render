@@ -8,7 +8,10 @@ export default function linkRenderer(this: Renderer, link : Tokens.Link) : strin
     const text = renderInlineTokens(this, link.tokens) || link.text;
 
     if (link.autolink) {
-        // choose angle-bracket form as canonical output for autolink tokens
+        if (link.bareAutolink) {
+            return link.href;
+        }
+
         if (link.href === 'mailto:' + text) {
             return `<${text}>`;
         }

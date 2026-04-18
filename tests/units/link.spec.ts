@@ -40,4 +40,14 @@ describe('link', () => {
 
         expect(result).toEqual(markdown);
     });
+
+    it('renders bare autolinks without angle brackets', () => {
+        const markdown = 'https://example.com';
+
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        const result = markdownMarked(markdown);
+
+        expect(result).toEqual(markdown);
+    });
 });
