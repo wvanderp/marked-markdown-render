@@ -5,7 +5,7 @@ import { Token, Renderer, Tokens } from 'marked';
  * @returns the renderer
  */
 export default function listRenderer(this: Renderer, list : Tokens.List) : string {
-    return renderMarkdownList([list]);	
+    return renderMarkdownList([list]).replace(/\n$/, '');
 }
 
 
