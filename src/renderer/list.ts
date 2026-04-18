@@ -36,7 +36,7 @@ function renderList(this: Renderer, list: Tokens.List): string {
         const content = renderListItemContent.call(this, itemContentTokens);
 
         if (!content) {
-            return `${marker}${checkbox}`;
+            return `${marker}${checkbox}`.trimEnd();
         }
 
         const indentedContent = indentContinuationLines(content, 2);
@@ -44,7 +44,35 @@ function renderList(this: Renderer, list: Tokens.List): string {
         return `${marker}${checkbox}${indentedContent}`;
     });
 
-    return renderedItems.join(list.loose ? '\n\n' : '\n');
+    if (renderedItems.length <= 1) {
+        return renderedItems.join('');
+    }
+
+    let markdown = '';
+
+    renderedItems.forEach((renderedItem, index) => {
+        markdown += renderedItem;
+
+        if (index >= renderedItems.length - 1) {
+            return;
+        }
+
+        markdown += getListItemSeparator(list.items[index]);
+    });
+
+    return markdown;
+}
+
+function getListItemSeparator(previousItem: Tokens.ListItem): string {
+    if (previousItem.text.endsWith('\n')) {
+        return '\n\n';
+    }
+
+    if (previousItem.loose && previousItem.tokens.length === 0) {
+        return '\n\n';
+    }
+
+    return '\n';
 }
 
 function renderListItemContent(this: Renderer, tokens: Tokens.ListItem['tokens']): string {
