@@ -1,5 +1,5 @@
 import { Renderer, Tokens } from 'marked';
-import { formatLinkDestination, formatLinkTitle, renderInlineTokens } from './linkSyntax';
+import { formatLinkDestination, formatLinkTitle, renderInlineTokens, renderLinkContent } from './linkSyntax';
 
 type LinkDefinition = {
     href: string;
@@ -36,7 +36,7 @@ function normalizeReferenceLabel(label: string): string {
  * @returns the renderer
  */
 export default function linkRenderer(this: Renderer, link : Tokens.Link) : string {
-    const text = renderInlineTokens(this, link.tokens) || link.text;
+    const text = renderLinkContent(this, link.tokens, link.text);
 
     if (link.linkStyle === 'barelink') {
         if (link.href === 'mailto:' + text) {

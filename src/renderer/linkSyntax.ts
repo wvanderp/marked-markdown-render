@@ -56,12 +56,33 @@ export function renderInlineTokens(renderer: Renderer, tokens?: Token[]): string
     return renderer.parser.parseInline(tokens);
 }
 
+function escapeTextBracketsInTokens(tokens: Token[]): Token[] {
+    return tokens.map(token => {
+        if (token.type === 'text') {
+            return { ...token, text: (token as { text: string }).text.replace(/[\[\]]/g, '\\$&') };
+        }
+        if ('tokens' in token && Array.isArray((token as { tokens?: Token[] }).tokens)) {
+            return { ...token, tokens: escapeTextBracketsInTokens((token as { tokens: Token[] }).tokens) };
+        }
+        return token;
+    });
+}
+
+export function renderLinkContent(renderer: Renderer, tokens?: Token[], fallbackText?: string): string {
+    if (!tokens || tokens.length === 0) {
+        return fallbackText ? fallbackText.replace(/[\[\]]/g, '\\$&') : '';
+    }
+
+    const escaped = escapeTextBracketsInTokens(tokens);
+    return renderer.parser.parseInline(escaped);
+}
+
 export function formatLinkDestination(href: string): string {
     if (href.length === 0) {
         return '';
     }
 
-    if (/\s/.test(href)) {
+    if (/[\x00-\x20]/.test(href)) {
         return `<${escapeBracketedDestination(href)}>`;
     }
 

@@ -1,5 +1,5 @@
 import { Renderer, Tokens } from 'marked';
-import { formatLinkDestination, formatLinkTitle, renderInlineTokens } from './linkSyntax';
+import { formatLinkDestination, formatLinkTitle, renderInlineTokens, renderLinkContent } from './linkSyntax';
 
 type LinkDefinition = {
     href: string;
@@ -36,7 +36,7 @@ function normalizeReferenceLabel(label: string): string {
  * @returns the renderer
  */
 export default function imageRenderer(this: Renderer, image : Tokens.Image) : string {
-    const alt = renderInlineTokens(this, image.tokens) || image.text;
+    const alt = renderLinkContent(this, image.tokens, image.text);
 
     if (image.linkStyle === 'reflink') {
         const referenceTag = getReferenceTag(this, image);

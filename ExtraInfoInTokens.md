@@ -37,8 +37,18 @@ Missing details:
 - Whether an empty destination was written as `[]()` or `[](<>)` (both parse to `href = ""`)
 - Whether balanced parentheses in a plain destination were written escaped or unescaped, for example `[link](\(foo\))` vs `[link]((foo))` (both parse to `href = "(foo)"`)
 - Whether a backslash in a plain destination was a literal backslash or part of a backslash-escape sequence, for example `[link](foo\bar)` is unambiguous (`href = "foo\bar"`) but if the href contains a backslash followed by ASCII punctuation the renderer cannot determine whether the source used `\\` or a backslash-escape
+- Whether an angle-bracketed destination `<b)c>` or `<foo(and(bar)>` was used vs an escaped plain destination — the token only stores the resolved href, so both forms produce the same token
+- Whether backslash escapes in the href were originally present, for example `foo\)\:` resolves to `foo):` and the original escaping is lost
+- The title delimiter style: `"title"`, `'title'`, or `(title)` — only the resolved title string is stored
+- Whether an escaped quote appeared in the title and which delimiter was used, for example `"title \"&quot;"` — the token stores the resolved title with literal quotes
+- Whitespace and newlines inside the destination/title area, for example `(   /uri\n  "title"  )` is normalized to `href="/uri", title="title"`
+- Whether the link used collapsed reflink syntax `[foo][]` or shortcut reflink syntax `[foo]` — both parse to a `reflink` token with identical fields
+- Reference label case: `[BaR]` is normalized to `bar` in the definition tag, so the original casing of the reference label in `[text][BaR]` is lost
+- Unicode case folding in reference labels: `[SS]` is normalized to `ss`, so `[ẞ]` matching `[SS]` cannot reproduce the original label
+- Multiline definition labels: `[Foo\n  bar]` is normalized to `foo bar`, so the original line breaks and indentation are lost
+- Duplicate definitions: when multiple definitions exist for the same label (e.g. `[foo]: /url1` and `[foo]: /url2`), only the first is used and the second is lost from the token stream
 
-Because of this, the renderer canonicalizes destinations to the simplest valid form: balanced parentheses are emitted without escaping, and backslashes are only escaped when followed by ASCII punctuation. The exact original byte form cannot always be reconstructed from tokens alone. This affects CommonMark example 495.
+Because of this, the renderer canonicalizes destinations to the simplest valid form: balanced parentheses are emitted without escaping, backslashes are only escaped when followed by ASCII punctuation, titles use `"` by default (falling back to `'` if the title contains `"`), and reflinks use shortcut syntax when the text matches the tag. The exact original byte form cannot always be reconstructed from tokens alone. This affects CommonMark examples 486, 492, 495, 499, 500, 505, 506, 510, 539, 540, 541, 544, 553, 554, 555, and 566.
 
 
 ## link reference definitions
@@ -71,8 +81,10 @@ The image token does not preserve all source-form choices for destinations and r
 Missing details:
 - Whether an inline destination without whitespace was written in bracketed form, for example `![foo](<url>)` vs `![foo](url)` (both parse to `href = "url"`)
 - Whether a matching reference-style image used shortcut syntax `![foo]` or collapsed syntax `![foo][]` (both parse to reflink image tokens with equivalent fields)
+- Reference label case in image definitions: `[FOOBAR]` is normalized to `foobar`, so `![foo *bar*][FOOBAR]` cannot reproduce the original label casing; similarly `[BAR]` → `bar`
+- Extra whitespace before the title in inline images, for example `![foo](/path/to/train.jpg  "title")` (double space) — the token only stores the resolved href and title, so the extra space is lost
 
-Because of this, the renderer must choose a canonical form for these cases and cannot always reproduce byte-exact image syntax from tokens alone.
+Because of this, the renderer must choose a canonical form for these cases and cannot always reproduce byte-exact image syntax from tokens alone. This affects CommonMark examples 576, 577, 579, 580, 583, 584, 585, and 586.
 
 
 ## lists
@@ -117,3 +129,16 @@ Missing details:
 - For multi-line setext headings (heading text containing a newline), the underline was conventionally aligned to the *last* line, which the renderer reproduces
 
 Because of this, the renderer emits a setext underline whose length matches the last line of the heading text (the most common convention). Headings with an underline of different length, or with leading/trailing whitespace, cannot be reproduced exactly from tokens alone. This affects CommonMark setext heading examples 82, 83, 84, 86, 88, 89, 91, 93, 99, 101, and 105.
+
+
+## ATX headings
+
+The `Tokens.Heading` token for ATX headings preserves `style: "atx"`, `depth` (1–6), and the trimmed heading text. Several source-form details are lost.
+
+Missing details:
+- Optional closing `#` sequences — for example `### foo ###` is stored as `text = "foo"` with no record of the closing hashes or their count
+- Multiple spaces between the `#` prefix and the text — for example `#                  foo` is stored as `depth = 1, text = "foo"` with no record of the extra spaces
+- Leading spaces before the `#` prefix (up to 3 spaces) — for example `  ## foo` is stored with no record of the leading indent
+- Whether an empty heading had trailing whitespace — for example `#` vs `# ` are indistinguishable in the token
+
+Because of this, the renderer always emits the canonical ATX heading form: `#` prefix, single space, text, no closing hashes, no leading indent (e.g. `### foo`). Empty headings are rendered as `# ` (with a trailing space) for depth 1, etc. This affects CommonMark examples 67, 68, 71, 72, 73, and 79.

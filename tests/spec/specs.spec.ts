@@ -106,6 +106,41 @@ const skipTests = new Set([
     293, // blockquote lazy continuation inside list item — lazy-cont. not in token
     295, // list items with varying leading spaces (0–3) — leading indent stripped by Marked
     297, // mixed list types (`10)` + `- `) on adjacent lines — leading indent stripped
+
+    // ATX headings: closing hashes, leading indent, spacing not preserved in token
+    67, // multiple spaces between `#` and text not preserved (`#                  foo` → `# foo`)
+    68, // leading spaces before `#` not preserved (`  ## foo` → `## foo`)
+    71, // closing `##` / `###` and leading indent/multi-spacing not preserved
+    72, // closing `#` sequences not preserved (`# foo ####...` → `# foo`)
+    73, // closing `###` not preserved (`### foo ###` → `### foo`)
+    77, // hr repetition count not preserved (`****` → `***`)
+    79, // closing `###` and empty heading trailing space ambiguity (`#` vs `# `)
+
+    // Links: escaping/quoting style, title delimiter, ref label case not preserved in token
+    492, // angle-bracket dest `<b)c>` not distinguishable from escaped parens in token
+    499, // angle-bracket dest `<foo(and(bar)>` not distinguishable from escaped parens
+    500, // backslash escapes in href resolved (`\)\:` → `):`) — original escaping not in token
+    505, // title delimiter style (`"` vs `'` vs `()`) not preserved in token
+    506, // escaped quote in title + delimiter choice not preserved
+    510, // multiline link with internal whitespace not preserved (`(   /uri\n  "title"  )` → `(/uri "title")`)
+    539, // ref label case not preserved (`[BaR]` → `[bar]`)
+    540, // Unicode case folding in ref label (`[SS]` → `[ss]`)
+    541, // multiline def label and ref label case not preserved
+    544, // duplicate defs — second def lost from token stream
+    553, // collapsed reflink `[foo][]` indistinguishable from shortcut `[foo]`
+    554, // collapsed reflink `[*foo* bar][]` indistinguishable from shortcut
+    555, // collapsed reflink `[Foo][]` indistinguishable from shortcut
+    566, // collapsed reflink `[foo][]` indistinguishable from shortcut
+
+    // Images: same limitations as links, plus angle-bracket dest style
+    576, // collapsed image reflink `![foo *bar*][]` indistinguishable from shortcut
+    577, // image ref label case not preserved (`[FOOBAR]` → `[foobar]`)
+    579, // double space before title not preserved (`/train.jpg  "title"` → single space)
+    580, // angle-bracket dest `<url>` not distinguishable from plain dest in token
+    583, // image ref label case not preserved (`[BAR]` → `[bar]`)
+    584, // collapsed image reflink `![foo][]` indistinguishable from shortcut
+    585, // collapsed image reflink `![*foo* bar][]` indistinguishable from shortcut
+    586, // collapsed image reflink `![Foo][]` indistinguishable from shortcut
 ]);
 
 describe('Commonmark', () => {
