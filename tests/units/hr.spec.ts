@@ -39,3 +39,22 @@ describe('hr', () => {
         expect(() => hrRenderer({ character: '!' } as any)).toThrow('Unknown hr type: !');
     });
 });
+
+describe('hr normalization', () => {
+    // We only render the hr tags as three characters, so we need to test that the normalization works correctly.
+
+    const testcases = [
+        { markdown: '****', expected: '***\n' },
+        { markdown: '* * * *', expected: '***\n' },
+        { markdown: '-----', expected: '---\n' },
+        { markdown: '- - - - -', expected: '---\n' },
+        { markdown: '______', expected: '___\n' },
+        { markdown: '_ _ _ _    _', expected: '___\n' },
+    ];
+
+    it.each(testcases)('normalizes hr markdown correctly', ({ markdown, expected }) => {
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+        const result = markdownMarked(markdown);
+        expect(result).toEqual(expected);
+    });
+});

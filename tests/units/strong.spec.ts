@@ -27,7 +27,7 @@ describe('Strong', () => {
     });
 
     it('falls back to double asterisks for unknown strong delimiter', () => {
-        const strong = { raw: '~text~', text: 'text' } as unknown as Tokens.Strong;
+        const strong = { raw: '~text~', text: 'text' } as Tokens.Strong;
         expect(strongRenderer(strong)).toBe('**text**');
     });
 });

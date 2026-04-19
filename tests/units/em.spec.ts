@@ -27,7 +27,7 @@ describe('em', () => {
     });
 
     it('falls back to underscore for unknown em delimiter', () => {
-        const em = { raw: '~text~', text: 'text' } as unknown as Tokens.Em;
+        const em = { raw: '~text~', text: 'text' } as Tokens.Em;
         expect(emRenderer(em)).toBe('_text_');
     });
 });

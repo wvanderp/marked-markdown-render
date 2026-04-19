@@ -57,12 +57,12 @@ describe('Code', () => {
     });
 
     it('handles undefined lang via direct call', () => {
-        const code = { text: 'hello', lang: undefined } as unknown as Tokens.Code;
+        const code = { text: 'hello', lang: undefined } as Tokens.Code;
         expect(codeRenderer(code)).toBe('```\nhello\n```\n');
     });
 
     it('handles empty text with lang via direct call', () => {
-        const code = { text: '', lang: 'js' } as unknown as Tokens.Code;
+        const code = { text: '', lang: 'js' } as Tokens.Code;
         expect(codeRenderer(code)).toBe('```js\n```\n');
     });
 });

@@ -17,7 +17,19 @@ const sections = commonmark.reduce<Record<string, any[]>>((acc, test) => {
 
 
 // Tests that are inherent limitations: the AST doesn't preserve enough info to round-trip
-const skipTests = new Set([
+const skippedBecauseOfNormalization = new Set([
+    105, // `* * *` thematic break rendered as `***` (hr spacing not preserved)
+    47, // hr leading spaces not preserved in token (only `character` property exists)
+    50, // hr repetition count not preserved (37 underscores → 3)
+    51, // hr spacing between characters not preserved (` - - -` → `---`)
+    52, // hr spacing pattern not preserved (` **  * ** * ** * **` → `***`)
+    53, // hr spacing between characters not preserved (`-     -      -      -` → `---`)
+    54, // hr trailing spaces not preserved (`- - - -    ` → `---`)
+    60, // hr spacing `* * *` not preserved, renders as `***` (ambiguous with list)
+    61, // hr `* * *` inside list item not preserved (renders as `***`)
+]);
+
+const skippedBecauseOfTokenizationLimitations = new Set([
     4, // list continuation indent style (tab vs spaces) is not preserved in list tokens
     329, // code span delimiter/padding choice is ambiguous from codespan text
     333, // code span boundary spaces are normalized away (` b ` vs `b`)
@@ -32,14 +44,7 @@ const skipTests = new Set([
     640, // line break inside code span (collapsed to space by lexer)
     641, // backslash line break inside code span
     486, // empty destination style `()` vs `(<>)` is not preserved in link tokens
-    47, // hr leading spaces not preserved in token (only `character` property exists)
-    50, // hr repetition count not preserved (37 underscores → 3)
-    51, // hr spacing between characters not preserved (` - - -` → `---`)
-    52, // hr spacing pattern not preserved (` **  * ** * ** * **` → `***`)
-    53, // hr spacing between characters not preserved (`-     -      -      -` → `---`)
-    54, // hr trailing spaces not preserved (`- - - -    ` → `---`)
-    60, // hr spacing `* * *` not preserved, renders as `***` (ambiguous with list)
-    61, // hr `* * *` inside list item not preserved (renders as `***`)
+
     495, // escaped vs unescaped balanced parens in link destination not distinguished (`\(foo\)` vs `(foo)`)
 
     // Setext headings: underline length and heading text whitespace not preserved in token
@@ -53,7 +58,6 @@ const skipTests = new Set([
     93, // blockquote lazy-continuation line breaks setext reconstruction (lazy cont. not in token)
     99, // setext-like `-----` is a thematic break; hr repetition count not preserved
     101, // setext-like `-----` after blockquote is a thematic break; hr repetition not preserved
-    105, // `* * *` thematic break rendered as `***` (hr spacing not preserved)
 
     // Indented code blocks: certain source-form details not preserved in token
     108, // list item's 2-space leading indent before `- ` not in token; continuation indented 2 not 4
@@ -210,6 +214,8 @@ const skipTests = new Set([
     312, // leading spaces before bullet markers stripped
     313, // leading spaces before ordered-list markers stripped
 ]);
+
+const skipTests = new Set([...skippedBecauseOfNormalization, ...skippedBecauseOfTokenizationLimitations]);
 
 
 describe('Commonmark', () => {

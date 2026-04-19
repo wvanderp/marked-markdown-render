@@ -161,3 +161,4 @@ describe('link', () => {
         expect(result).toBe('[text](/url)');
     });
 });
+

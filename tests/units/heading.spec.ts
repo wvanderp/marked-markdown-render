@@ -39,3 +39,46 @@ describe('Heading', () => {
         expect(() => headingRenderer({ depth: 3, text: 'Test' } as any)).toThrow();
     });
 });
+
+describe('Setext Heading normalization', () => {
+    // we underline the whole text with = or -, no less no more.
+
+    const testcases = [
+        [ 
+            [
+                'setext',
+                '======'
+            ],
+            [
+                'setext',
+                '======'
+            ]
+        ],
+        [
+            [
+                'setext',
+                '==='
+            ],
+            [
+                'setext',
+                '======'
+            ]
+        ],
+        [
+            [
+                'setext',
+                '=============='
+            ],
+            [
+                'setext',
+                '======'
+            ]
+        ],
+    ] as [[string, string], [string, string]][]
+    
+    it.each(testcases)('normalizes setext headings correctly', (markdown, expected) => {
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+        const result = markdownMarked(markdown.join('\n'));
+        expect(result).toEqual(expected.join('\n') + '\n');
+    });
+});
