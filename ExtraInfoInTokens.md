@@ -5,6 +5,17 @@ The AST tokens does not contain all the information fully recreated the original
 this document contains some examples of missing information.
 
 
+## space (blank lines)
+
+The `Tokens.Space` token only records the number of blank lines (`lines`) and does not preserve any whitespace content within those lines.
+
+Missing details:
+- Whitespace-only lines (e.g. a blank line containing `   ` three spaces) — the raw form stores the spaces, but the `lines` count does not; the spaces are irretrievably lost
+- Trailing whitespace on the final line before the blank-line block — for example the `  ` in `text  \n\nmore text` is captured in the space token's `raw` (`"  \n\n"`) but not in `lines`, so it cannot be recovered
+
+Because of this, the renderer always emits truly empty blank lines (no whitespace content). Source files that use whitespace-only blank lines (e.g. for indented continuation blocks) will have those spaces removed in the rendered output.
+
+
 ## table
 
 The table token does not preserve:
@@ -99,6 +110,7 @@ Missing details include:
 - Trailing spaces after a list marker on an empty-content line (e.g. `-   ` with 3 trailing spaces)
 - Whether the first line of a list item had no inline content and the content appeared on the next line (e.g. `-\n  foo` with trailing spaces like `-   \n  foo`) — trailing spaces are not preserved
 - Leading-space indentation on same-level list items (e.g. `- foo\n - bar\n  - baz`) — Marked flattens these to equivalent tokens
+- Hard-line-break trailing spaces absorbed into a space token: when a list item ends with `  ` (two trailing spaces, a hard line break marker) immediately followed by a blank line and continuation content that is not indented enough to belong to the same list item, Marked captures the `  ` in the subsequent `space` token's `raw` field rather than in the list item's token. The `space` token only stores a `lines` count, so the trailing `  ` is irretrievably lost.
 
 The renderer uses a canonical one-space marker (`- item`, `1. item`) and infers continuation indentation from the minimum non-code-block leading-space count of continuation lines visible in `listItem.text`. When `listItem.text` starts with `\n` the content is placed on the next line (canonical no-trailing-space form). This affects CommonMark examples 254, 257, 258, 259, 260, 263, 268, 271, 276, 277, 279, 282, 286, 287, 288, 290, 291, 292, 293, 295, and 297.
 
@@ -112,6 +124,8 @@ Missing details:
 - The fence length: whether the opening fence was ` ``` ` (3), ```` ```` ```` (4), or `~~~~` (4), etc.
 - Leading indentation on the fence lines (up to 3 spaces), which is stripped before token creation
 - Whether the fenced block was closed by a matching closing fence or ran to end-of-input/end-of-blockquote
+
+- Leading whitespace in the info string — for example ```` ``` bash ```` stores `lang = "bash"` (the leading space is stripped); the original spacing before the language identifier cannot be recovered
 
 Because of this, the renderer always emits backtick fences of length 3 (`` ``` ``) with no leading indentation and an explicit closing fence. Tilde-fenced blocks, over-length fences, indented fences, and unclosed fences cannot be reproduced from tokens alone. This affects CommonMark examples 120–146 (except 119, 122, 129–130, 134, 140, 142).
 
@@ -140,5 +154,6 @@ Missing details:
 - Multiple spaces between the `#` prefix and the text — for example `#                  foo` is stored as `depth = 1, text = "foo"` with no record of the extra spaces
 - Leading spaces before the `#` prefix (up to 3 spaces) — for example `  ## foo` is stored with no record of the leading indent
 - Whether an empty heading had trailing whitespace — for example `#` vs `# ` are indistinguishable in the token
+- Trailing whitespace after the heading text — for example `### foo  ` is stored as `text = "foo"` with the trailing spaces stripped; any significance (e.g. as a hard line break marker) is lost
 
 Because of this, the renderer always emits the canonical ATX heading form: `#` prefix, single space, text, no closing hashes, no leading indent (e.g. `### foo`). Empty headings are rendered as `# ` (with a trailing space) for depth 1, etc. This affects CommonMark examples 67, 68, 71, 72, 73, and 79.

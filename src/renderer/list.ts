@@ -106,7 +106,7 @@ function renderListItemContent(this: Renderer, tokens: Tokens.ListItem['tokens']
             return;
         }
 
-        const rendered = renderListItemToken.call(this, token).trimEnd();
+        const rendered = renderListItemToken.call(this, token).replace(/\n+$/, '');
 
         if (!rendered) {
             return;

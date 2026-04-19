@@ -1,5 +1,4 @@
 import { Tokens } from 'marked';
-import { decode } from 'html-entities';
 
 /**
  * renders the text token to markdown
@@ -9,5 +8,5 @@ export default function textRenderer(text : Tokens.Text | Tokens.Escape) : strin
     if (text.type === 'escape') {
         return '\\' + text.text;
     }
-    return decode(text.text);
+    return text.text;
 }
