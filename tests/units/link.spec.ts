@@ -14,14 +14,23 @@ describe('link', () => {
         expect(result).toEqual(markdown + '\n');
     });
 
-    it('escapes destinations that need parentheses', () => {
+    it('outputs balanced parentheses without escaping', () => {
         const markdown = '[link](\\(foo\\))';
 
         const markdownMarked = marked.use(markedMarkdownRenderer());
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown + '\n');
+        // Balanced parens don't need escaping; both forms produce href "(foo)"
+        expect(result).toEqual('[link]((foo))\n');
+    });
+
+    it('escapes unbalanced parentheses in destinations', () => {
+        const markdownMarked = marked.use(markedMarkdownRenderer());
+
+        // Unbalanced ) needs escaping
+        const result = markdownMarked('[link](foo\\)bar)');
+        expect(result).toEqual('[link](foo\\)bar)\n');
     });
 
     it('normalizes empty destinations and wraps spaced destinations in angle brackets', () => {
