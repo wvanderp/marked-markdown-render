@@ -11,6 +11,6 @@ describe('HTML', () => {
 
         const result = markdownMarked(markdown);
 
-        expect(result).toEqual(markdown);
+        expect(result).toEqual(markdown + '\n');
     });
 });

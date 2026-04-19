@@ -82,8 +82,11 @@ function renderList(this: Renderer, list: Tokens.List): string {
 }
 
 function getListItemSeparator(previousItem: Tokens.ListItem): string {
-    if (previousItem.text.endsWith('\n')) {
-        return '\n\n';
+    const trailingNewlines = previousItem.text.match(/\n+$/)?.[0].length ?? 0;
+
+    if (trailingNewlines > 0) {
+        // Each trailing '\n' in text corresponds to one blank line in the source.
+        return '\n'.repeat(trailingNewlines + 1);
     }
 
     if (previousItem.loose && previousItem.tokens.length === 0) {

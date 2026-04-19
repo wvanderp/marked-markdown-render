@@ -141,7 +141,76 @@ const skipTests = new Set([
     584, // collapsed image reflink `![foo][]` indistinguishable from shortcut
     585, // collapsed image reflink `![*foo* bar][]` indistinguishable from shortcut
     586, // collapsed image reflink `![Foo][]` indistinguishable from shortcut
+
+    // Tabs: tab characters are expanded to spaces in all tokens; original tabs not recoverable
+    5, // tab inside list item continuation — tab expanded to spaces in token
+    6, // tab as code-block indent — tab expanded to spaces
+    7, // tab inside blockquote — tab expanded to spaces
+    8, // tab in list item — tab expanded to spaces
+    9, // tab in code block inside list — tab expanded
+    10, // tab in continuation indent — tab expanded
+    11, // tab in nested list/blockquote — tab expanded
+
+    // Backslash escapes: escape sequences are resolved in token text/href/lang fields
+    16, // backslash hard-break (`foo\`) is indistinguishable from two-space break in br token
+    19, // tilde fence not preserved in Code token (see also 120)
+    22, // backslash escapes in link href/title decoded (`\*` → `*`) — not recoverable
+    23, // backslash escapes in def href/title decoded — not recoverable
+    24, // backslash escape in fenced-code info string decoded + space stripped — not recoverable
+
+    // Entity references: HTML entities are decoded to Unicode characters in text tokens
+    25, // named HTML entities decoded (`&copy;` → `©`) — original entity form not in token
+    26, // decimal numeric entities decoded (`&#35;` → `#`)
+    27, // hex numeric entities decoded (`&#X22;` → `"`)
+    28, // invalid entities kept as-is but valid ones decoded — mixed; original not in token
+    29, // partial entity `&copy` kept as-is — original form not in token
+    34, // entity in fenced-code info string decoded (`f&ouml;&ouml;` → `föö`)
+    35, // entity in codespan decoded (`f&ouml;&ouml;`) — codespan text normalised
+    37, // entity used as inline delimiter (`&#42;foo&#42;`) — decoded to `*`, re-parsed as em
+    38, // entity used as list marker (`&#42; foo`) — decoded to `*`, re-parsed as list
+    39, // `&#10;` (LF entity) decoded; becomes real newline inside paragraph
+    40, // `&#9;` (tab entity) decoded to tab; tab expanded inside paragraph
+    41, // entity in link title attribute — decoded in token
+
+    // Link reference definitions: formatting not preserved in def tokens
+    193, // multi-line def with leading spaces and single-quote title — canonical form only
+    194, // def label case (`[Foo*bar\]]`) normalised to lowercase `tag` in token
+    195, // angle-bracket URL and single-quote title on separate lines — not in token
+    196, // multi-line single-quote title — delimiter style not preserved in token
+    198, // URL on continuation line (`[foo]:\n/url`) — multi-line form not in token
+    200, // empty URL with angle-brackets (`<>`) — href is `""` for both `<>` and missing URL
+    202, // backslash escapes in def href/title decoded — original escaping not in token
+    204, // duplicate def labels — second definition dropped from token stream
+    205, // def label case (`[FOO]`) normalised to `[foo]` in `tag` field
+    206, // Unicode def label case-folded (`[ΑΓΩ]` → `[αγω]`) in `tag` field
+    208, // multi-line label (`[\nfoo\n]`) normalised to `[ foo ]` in `tag` field
+    217, // indented title continuation line (`\n  "bar"`) — indentation not in token
+
+    // Paragraphs / blank lines: whitespace details not preserved
+    226, // extra trailing spaces (5) before hard break — br token doesn't preserve exact count
+    227, // blank line with trailing spaces (`  `) — spaces stripped; only blank line in token
+
+    // Block quotes: lazy-continuation lines and prefix style not preserved in tokens
+    229, // `>` without space (`>#`) not preserved; canonical `> ` always used
+    230, // leading spaces before `>` not preserved in blockquote token
+    232, // lazy continuation line without `>` (`baz`) not preserved — rendered with `>`
+    233, // lazy continuation line inside blockquote paragraph not preserved
+    237, // unclosed fenced code inside blockquote via lazy continuation — not recoverable
+    238, // lazy continuation via indentation (`    - bar`) not preserved — rendered with `>`
+    240, // trailing spaces on blank blockquote line (`>  `) not preserved in token
+    247, // lazy continuation paragraph line not preserved in blockquote token
+    250, // lazy continuation inside triple-nested blockquote — not preserved
+    251, // mixed `>` prefix forms (`>>>`, `> `, `>>`) not preserved — canonical `> ` used
+
+    // Lists: marker style/spacing and leading indent not preserved in tokens
+    305, // `1.  ` double-space marker spacing not in token
+    309, // `-   foo` (3-space marker) and continuation indent not in token
+    310, // leading spaces before list markers (0–3) stripped by Marked
+    311, // leading spaces before ordered-list numbers stripped by Marked
+    312, // leading spaces before bullet markers stripped
+    313, // leading spaces before ordered-list markers stripped
 ]);
+
 
 describe('Commonmark', () => {
 

@@ -18,6 +18,7 @@ import listItemRenderer from './renderer/listItem';
 import textRenderer from './renderer/text';
 import delRenderer from './renderer/del';
 import tableRenderer from './renderer/table';
+import HTMLRenderer from './renderer/HTML';
 
 /**
  * A extension for marked that renders the markdown back to markdown
@@ -36,6 +37,7 @@ export default function markedMarkdownRenderer() : MarkedExtension {
             em: emRenderer,
             heading: headingRenderer,
             hr: hrRenderer,
+            html: HTMLRenderer,
             image: imageRenderer,
             link: linkRenderer,
             list: listRenderer,
