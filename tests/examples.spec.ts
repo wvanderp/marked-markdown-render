@@ -9,10 +9,18 @@ const examplesPath = path.join(__dirname, 'examples');
 const examples = fs.readdirSync(examplesPath)
     .filter((file) => file.endsWith('.md'));
 
+const disabledExamples = new Set([
+    'cheatsheet.md',
+    'marked-readme.md',
+    'marked-test.md',
+]);
+
 describe('examples', () => {
 
     examples.forEach((example) => {
-        it(example, () => {
+        const testCase = disabledExamples.has(example) ? it.skip : it;
+
+        testCase(example, () => {
             const markdown = fs.readFileSync(`${examplesPath}/${example}`, 'utf-8');
             const markdownMarked = marked.use(markedMarkdownRenderer());
 

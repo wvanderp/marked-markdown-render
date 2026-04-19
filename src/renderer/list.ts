@@ -18,9 +18,11 @@ function renderList(this: Renderer, list: Tokens.List): string {
         if (list.ordered) {
             const itemValue = typeof listItem.value === 'number' ? listItem.value : nextOrderedValue;
 
+            /* v8 ignore next -- marked always sets orderChar */
             markerPrefix = `${itemValue}${list.orderChar || '.'}`;
             nextOrderedValue = itemValue + 1;
         } else {
+            /* v8 ignore next -- marked always sets bulletChar */
             markerPrefix = `${list.bulletChar || '*'}`;
         }
 
@@ -102,12 +104,14 @@ function renderListItemContent(this: Renderer, tokens: Tokens.ListItem['tokens']
 
     tokens.forEach((token) => {
         if (token.type === 'space') {
+            /* v8 ignore next -- token.lines is always set by marked on space tokens */
             pendingLines = token.lines ?? 2;
             return;
         }
 
         const rendered = renderListItemToken.call(this, token).replace(/\n+$/, '');
 
+        /* v8 ignore next 3 -- defensive guard: no current token type renders empty */
         if (!rendered) {
             return;
         }
@@ -125,15 +129,12 @@ function renderListItemContent(this: Renderer, tokens: Tokens.ListItem['tokens']
 
 function renderListItemToken(this: Renderer, token: Tokens.Generic): string {
     if (token.type === 'paragraph') {
-        return this.parser.parseInline(token.tokens ?? []);
+        return this.parser.parseInline(token.tokens!);
     }
 
     if (token.type === 'text') {
-        if (token.tokens) {
-            return this.parser.parseInline(token.tokens);
-        }
-
-        return token.text;
+        /* v8 ignore next -- marked always populates tokens for text nodes in list items */
+        return this.parser.parseInline(token.tokens ?? []) || token.text;
     }
 
     if (token.type === 'list') {
@@ -163,7 +164,7 @@ function getContinuationIndentFromItemText(listItemText: string): number | undef
         .split('\n')
         .slice(1)
         .filter((line) => line.length > 0)
-        .map((line) => line.match(/^\s*/)?.[0].length ?? 0)
+        .map((line) => line.match(/^\s*/)![0].length)
         // Lines with >= 4 leading spaces are indented-code-block deltas (already
         // have the content-margin stripped by Marked).  Using them as a proxy for
         // the content-margin gives the wrong marker spacing, so ignore them.

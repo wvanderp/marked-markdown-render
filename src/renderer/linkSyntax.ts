@@ -48,14 +48,6 @@ function escapeTitle(title: string, delimiter: '"' | '\''): string {
     return escapedBackslashes.replace(new RegExp(`\\${delimiter}`, 'g'), `\\${delimiter}`);
 }
 
-export function renderInlineTokens(renderer: Renderer, tokens?: Token[]): string {
-    if (!tokens || tokens.length === 0) {
-        return '';
-    }
-
-    return renderer.parser.parseInline(tokens);
-}
-
 function escapeTextBracketsInTokens(tokens: Token[]): Token[] {
     return tokens.map(token => {
         if (token.type === 'text') {

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { marked } from 'marked';
 import markedMarkdownRenderer from '../../src';
+import linkRenderer from '../../src/renderer/link';
 
 describe('link', () => {
     it('renders nested inline content inside a link label', () => {
@@ -90,5 +91,73 @@ describe('link', () => {
         const result = markdownMarked(markdown);
 
         expect(result).toEqual(markdown + '\n');
+    });
+
+    it('falls back to inline syntax for reflink when links dict is missing', () => {
+        const renderer = {
+            parser: {
+                options: {},
+                parseInline: () => ''
+            }
+        } as any;
+        const link = { href: '/url', title: null, text: 'text', tokens: [], linkStyle: 'reflink' } as any;
+        const result = linkRenderer.call(renderer, link);
+        expect(result).toBe('[text](/url)');
+    });
+
+    it('falls back to inline syntax for reflink when no matching reference found', () => {
+        const renderer = {
+            parser: {
+                options: {
+                    tokenizer: {
+                        lexer: {
+                            tokens: {
+                                links: { other: { href: '/other', title: null } }
+                            }
+                        }
+                    }
+                },
+                parseInline: () => ''
+            }
+        } as any;
+        const link = { href: '/url', title: null, text: 'text', tokens: [], linkStyle: 'reflink' } as any;
+        const result = linkRenderer.call(renderer, link);
+        expect(result).toBe('[text](/url)');
+    });
+
+    it('renders angle bracket for mailto link without linkStyle', () => {
+        const renderer = {
+            parser: {
+                options: {},
+                parseInline: () => ''
+            }
+        } as any;
+        const link = { href: 'mailto:a@b.com', title: null, text: 'a@b.com', tokens: [], linkStyle: undefined } as any;
+        const result = linkRenderer.call(renderer, link);
+        expect(result).toBe('<a@b.com>');
+    });
+
+    it('renders plain href when text matches href without linkStyle', () => {
+        const renderer = {
+            parser: {
+                options: {},
+                parseInline: () => ''
+            }
+        } as any;
+        const link = { href: 'https://x.com', title: null, text: 'https://x.com', tokens: [], linkStyle: undefined } as any;
+        const result = linkRenderer.call(renderer, link);
+        expect(result).toBe('https://x.com');
+    });
+
+    it('renders full link syntax as final fallback without linkStyle', () => {
+        const renderer = {
+            parser: {
+                options: {},
+                parseInline: () => ''
+            }
+        } as any;
+        const link = { href: '/url', title: null, text: 'text', tokens: [], linkStyle: undefined } as any;
+        const result = linkRenderer.call(renderer, link);
+        expect(result).toBe('[text](/url)');
     });
 });

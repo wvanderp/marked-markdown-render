@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { marked } from 'marked';
 import markedMarkdownRenderer from '../../src';
+import hrRenderer from '../../src/renderer/hr';
 
 describe('hr', () => {
     it('renders star thematic breaks', () => {
@@ -32,5 +33,9 @@ describe('hr', () => {
         const result = markdownMarked(markdown);
 
         expect(result).toEqual(markdown + '\n');
+    });
+
+    it('throws for unknown hr character', () => {
+        expect(() => hrRenderer({ character: '!' } as any)).toThrow('Unknown hr type: !');
     });
 });

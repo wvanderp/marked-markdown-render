@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { marked } from 'marked';
 import markedMarkdownRenderer from '../../src';
+import imageRenderer from '../../src/renderer/image';
 
 describe('Image', () => {
     it('should render the image to a image', () => {
@@ -72,5 +73,37 @@ describe('Image', () => {
         const result = markdownMarked(markdown);
 
         expect(result).toEqual(markdown + '\n');
+    });
+
+    it('falls back to inline syntax for reflink when links dict is missing', () => {
+        const renderer = {
+            parser: {
+                options: {},
+                parseInline: () => ''
+            }
+        } as any;
+        const image = { href: '/url', title: null, text: 'alt', tokens: [], linkStyle: 'reflink' } as any;
+        const result = imageRenderer.call(renderer, image);
+        expect(result).toBe('![alt](/url)');
+    });
+
+    it('falls back to inline syntax when no matching reference found', () => {
+        const renderer = {
+            parser: {
+                options: {
+                    tokenizer: {
+                        lexer: {
+                            tokens: {
+                                links: { other: { href: '/other', title: null } }
+                            }
+                        }
+                    }
+                },
+                parseInline: () => ''
+            }
+        } as any;
+        const image = { href: '/url', title: null, text: 'alt', tokens: [], linkStyle: 'reflink' } as any;
+        const result = imageRenderer.call(renderer, image);
+        expect(result).toBe('![alt](/url)');
     });
 });

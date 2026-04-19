@@ -1,5 +1,5 @@
 import { Renderer, Tokens } from 'marked';
-import { formatLinkDestination, formatLinkTitle, renderInlineTokens, renderLinkContent } from './linkSyntax';
+import { formatLinkDestination, formatLinkTitle, renderLinkContent } from './linkSyntax';
 
 type LinkDefinition = {
     href: string;
