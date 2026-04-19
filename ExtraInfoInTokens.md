@@ -31,12 +31,14 @@ Because of this, the renderer can only emit a valid equivalent codespan, not alw
 
 ## links
 
-The link token does not preserve the original empty-destination delimiter style.
+The link token does not preserve enough information to always reconstruct the exact original destination syntax.
 
-Missing detail:
+Missing details:
 - Whether an empty destination was written as `[]()` or `[](<>)` (both parse to `href = ""`)
+- Whether balanced parentheses in a plain destination were written escaped or unescaped, for example `[link](\(foo\))` vs `[link]((foo))` (both parse to `href = "(foo)"`)
+- Whether a backslash in a plain destination was a literal backslash or part of a backslash-escape sequence, for example `[link](foo\bar)` is unambiguous (`href = "foo\bar"`) but if the href contains a backslash followed by ASCII punctuation the renderer cannot determine whether the source used `\\` or a backslash-escape
 
-Because of this, the renderer canonicalizes empty link destinations to `()`. The exact `(<>)` source form cannot be reconstructed from tokens without using forbidden source text fields.
+Because of this, the renderer canonicalizes destinations to the simplest valid form: balanced parentheses are emitted without escaping, and backslashes are only escaped when followed by ASCII punctuation. The exact original byte form cannot always be reconstructed from tokens alone. This affects CommonMark example 495.
 
 
 ## link reference definitions
@@ -83,3 +85,31 @@ Missing details include:
 - Whether leading indentation before the list marker was stylistic and should be preserved in a byte-exact round trip
 
 Because of this, two inputs that parse to equivalent list tokens can differ in source bytes (for example CommonMark Tabs example 4: `- foo` followed by a tab-indented continuation paragraph). The renderer can emit a valid equivalent list structure, but cannot always reconstruct the exact original tab/space continuation form from tokens alone.
+
+
+## fenced code blocks
+
+The `Tokens.Code` token for a fenced code block only stores `codeBlockStyle: "fenced"`, the info string in `lang`, and the code body in `text`. All fence-formatting details are lost.
+
+Missing details:
+- The fence character: whether the original used backtick (`` ` ``) or tilde (`~`) fences — both produce identical tokens
+- The fence length: whether the opening fence was ` ``` ` (3), ```` ```` ```` (4), or `~~~~` (4), etc.
+- Leading indentation on the fence lines (up to 3 spaces), which is stripped before token creation
+- Whether the fenced block was closed by a matching closing fence or ran to end-of-input/end-of-blockquote
+
+Because of this, the renderer always emits backtick fences of length 3 (`` ``` ``) with no leading indentation and an explicit closing fence. Tilde-fenced blocks, over-length fences, indented fences, and unclosed fences cannot be reproduced from tokens alone. This affects CommonMark examples 120–146 (except 119, 122, 129–130, 134, 140, 142).
+
+The body of an empty fenced code block is rendered without an intervening blank line (i.e. `` ```\n``` `` rather than `` ```\n\n``` ``), matching the canonical closed-empty form.
+
+
+## setext headings
+
+The `Tokens.Heading` token preserves `style: "setext"`, `depth` (1 for `=`, 2 for `-`), and the trimmed heading text. Several source-form details are lost.
+
+Missing details:
+- The length of the underline sequence — any number of `=` or `-` characters is valid and the count is not stored
+- Leading spaces before the heading text line (up to 3 spaces), which are stripped
+- Trailing whitespace on the heading text line (e.g. a trailing tab or double-space), which is stripped
+- For multi-line setext headings (heading text containing a newline), the underline was conventionally aligned to the *last* line, which the renderer reproduces
+
+Because of this, the renderer emits a setext underline whose length matches the last line of the heading text (the most common convention). Headings with an underline of different length, or with leading/trailing whitespace, cannot be reproduced exactly from tokens alone. This affects CommonMark setext heading examples 82, 83, 84, 86, 88, 89, 91, 93, 99, 101, and 105.
