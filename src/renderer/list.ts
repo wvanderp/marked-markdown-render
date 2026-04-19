@@ -45,6 +45,17 @@ function renderList(this: Renderer, list: Tokens.List): string {
             return `${marker}${checkbox}`.trimEnd();
         }
 
+        // When the item text starts with '\n', the source had the marker on its own
+        // line (e.g. `-\n  foo`).  Render all content lines indented on the next line.
+        if (listItem.text.startsWith('\n')) {
+            const indent = ' '.repeat(marker.length + checkbox.length);
+            const allIndented = content
+                .split('\n')
+                .map((line) => (line.length === 0 ? line : `${indent}${line}`))
+                .join('\n');
+            return `${marker.trimEnd()}\n${allIndented}`;
+        }
+
         const continuationIndent = inferredContinuationIndent ?? (marker.length + checkbox.length);
         const indentedContent = indentContinuationLines(content, continuationIndent);
 
@@ -150,7 +161,10 @@ function getContinuationIndentFromItemText(listItemText: string): number | undef
         .slice(1)
         .filter((line) => line.length > 0)
         .map((line) => line.match(/^\s*/)?.[0].length ?? 0)
-        .filter((indent) => indent > 0);
+        // Lines with >= 4 leading spaces are indented-code-block deltas (already
+        // have the content-margin stripped by Marked).  Using them as a proxy for
+        // the content-margin gives the wrong marker spacing, so ignore them.
+        .filter((indent) => indent > 0 && indent < 4);
 
     if (continuationLineIndents.length === 0) {
         return undefined;

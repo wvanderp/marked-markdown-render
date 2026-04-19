@@ -81,10 +81,14 @@ The list and list_item tokens do not preserve indentation-style metadata for con
 
 Missing details include:
 - Whether continuation indentation after a list marker used tabs or spaces
-- The exact indentation width/style used for loose-paragraph continuation lines inside a list item
-- Whether leading indentation before the list marker was stylistic and should be preserved in a byte-exact round trip
+- The exact number of spaces between the list marker and the first content character when more than one space was used (e.g. `- ` vs `-   ` for an unordered item, or `1. ` vs `1.  ` for an ordered item) — only `list.bulletChar` / `list.orderChar` and the stripped `listItem.text` are available
+- Whether a leading indent (0–3 spaces) appeared before the list marker — these are stripped by Marked and not recorded in any token field
+- Zero-padded ordered list numbers (e.g. `003.`) — the token stores only the numeric value (`start: 3`)
+- Trailing spaces after a list marker on an empty-content line (e.g. `-   ` with 3 trailing spaces)
+- Whether the first line of a list item had no inline content and the content appeared on the next line (e.g. `-\n  foo` with trailing spaces like `-   \n  foo`) — trailing spaces are not preserved
+- Leading-space indentation on same-level list items (e.g. `- foo\n - bar\n  - baz`) — Marked flattens these to equivalent tokens
 
-Because of this, two inputs that parse to equivalent list tokens can differ in source bytes (for example CommonMark Tabs example 4: `- foo` followed by a tab-indented continuation paragraph). The renderer can emit a valid equivalent list structure, but cannot always reconstruct the exact original tab/space continuation form from tokens alone.
+The renderer uses a canonical one-space marker (`- item`, `1. item`) and infers continuation indentation from the minimum non-code-block leading-space count of continuation lines visible in `listItem.text`. When `listItem.text` starts with `\n` the content is placed on the next line (canonical no-trailing-space form). This affects CommonMark examples 254, 257, 258, 259, 260, 263, 268, 271, 276, 277, 279, 282, 286, 287, 288, 290, 291, 292, 293, 295, and 297.
 
 
 ## fenced code blocks
