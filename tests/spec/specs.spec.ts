@@ -14,21 +14,6 @@ const sections = commonmark.reduce<Record<string, any[]>>((acc, test) => {
     return acc;
 }, {});
 
-
-
-// Tests that are inherent limitations: the AST doesn't preserve enough info to round-trip
-const skippedBecauseOfNormalization = new Set([
-    105, // `* * *` thematic break rendered as `***` (hr spacing not preserved)
-    47, // hr leading spaces not preserved in token (only `character` property exists)
-    50, // hr repetition count not preserved (37 underscores → 3)
-    51, // hr spacing between characters not preserved (` - - -` → `---`)
-    52, // hr spacing pattern not preserved (` **  * ** * ** * **` → `***`)
-    53, // hr spacing between characters not preserved (`-     -      -      -` → `---`)
-    54, // hr trailing spaces not preserved (`- - - -    ` → `---`)
-    60, // hr spacing `* * *` not preserved, renders as `***` (ambiguous with list)
-    61, // hr `* * *` inside list item not preserved (renders as `***`)
-]);
-
 const skippedBecauseOfTokenizationLimitations = new Set([
     4, // list continuation indent style (tab vs spaces) is not preserved in list tokens
     329, // code span delimiter/padding choice is ambiguous from codespan text
@@ -215,7 +200,46 @@ const skippedBecauseOfTokenizationLimitations = new Set([
     313, // leading spaces before ordered-list markers stripped
 ]);
 
-const skipTests = new Set([...skippedBecauseOfNormalization, ...skippedBecauseOfTokenizationLimitations]);
+
+
+const normalizationOverwrites = {
+    47: {
+        expected: `***\n***\n***`,
+        explanation: `Thematic break indentation is not preserved in tokens; renderer emits canonical hr lines`
+    },
+    50: {
+        expected: `___`,
+        explanation: `Thematic break repetition count is not preserved; renderer emits canonical 3-character hr`
+    },
+    51: {
+        expected: `---`,
+        explanation: `Thematic break internal spacing is not preserved in tokens; renderer canonicalizes to contiguous marker`
+    },
+    52: {
+        expected: `***`,
+        explanation: `Thematic break internal spacing and repetition are not preserved; renderer emits canonical 3-character hr`
+    },
+    53: {
+        expected: `---`,
+        explanation: `Thematic break spacing between markers is not preserved; renderer emits canonical hr`
+    },
+    54: {
+        expected: `---`,
+        explanation: `Thematic break spacing and trailing spaces are not preserved in tokens`
+    },
+    60: {
+        expected: `* Foo\n***\n* Bar`,
+        explanation: `Thematic break spacing form inside list context is not preserved; renderer canonicalizes to '***'`
+    },
+    61: {
+        expected: `- Foo\n- ***`,
+        explanation: `Nested thematic break spacing inside list item is not preserved; renderer canonicalizes hr form`
+    },
+    105: {
+        expected: `Foo\nbar\n***\nbaz`,
+        explanation: `Thematic break spacing is not preserved in tokens; all hr with character '*' render as '***'`
+    }
+} as Record<number, { expected: string, explanation: string }>;
 
 
 describe('Commonmark', () => {
@@ -223,12 +247,15 @@ describe('Commonmark', () => {
     Object.entries(sections).forEach(([section, tests]) => {
         describe(section, () => {
             tests.forEach((test) => {
-                const testFn = skipTests.has(test.example) ? it.skip : it;
-                testFn(`${test.section} ${test.example}`, () => {
-                    const markdownMarked = marked.use(markedMarkdownRenderer())
 
-                    // @ts-expect-error
-                    expect(markdownMarked.parse(test.markdown).trim()).toBe(test.markdown.trim());
+                const testFn = skippedBecauseOfTokenizationLimitations.has(test.example) ? it.skip : it;
+
+                testFn(`${test.section} ${test.example}`, async () => {
+                    const markdownMarked = marked.use(markedMarkdownRenderer())
+                    const result = (await markdownMarked.parse(test.markdown)).trim();
+
+                    const expected = normalizationOverwrites[test.example]?.expected ?? test.markdown + '\n';
+                    expect(result).toEqual(expected.trim());
                 });
             });
         });
