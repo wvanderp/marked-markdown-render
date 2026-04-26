@@ -198,49 +198,17 @@ const skippedBecauseOfTokenizationLimitations = new Set([
     311, // leading spaces before ordered-list numbers stripped by Marked
     312, // leading spaces before bullet markers stripped
     313, // leading spaces before ordered-list markers stripped
+
+    47,
+    50,
+    51,
+    52,
+    53,
+    54,
+    60,
+    61,
+    105
 ]);
-
-
-
-const normalizationOverwrites = {
-    47: {
-        expected: `***\n***\n***`,
-        explanation: `Thematic break indentation is not preserved in tokens; renderer emits canonical hr lines`
-    },
-    50: {
-        expected: `___`,
-        explanation: `Thematic break repetition count is not preserved; renderer emits canonical 3-character hr`
-    },
-    51: {
-        expected: `---`,
-        explanation: `Thematic break internal spacing is not preserved in tokens; renderer canonicalizes to contiguous marker`
-    },
-    52: {
-        expected: `***`,
-        explanation: `Thematic break internal spacing and repetition are not preserved; renderer emits canonical 3-character hr`
-    },
-    53: {
-        expected: `---`,
-        explanation: `Thematic break spacing between markers is not preserved; renderer emits canonical hr`
-    },
-    54: {
-        expected: `---`,
-        explanation: `Thematic break spacing and trailing spaces are not preserved in tokens`
-    },
-    60: {
-        expected: `* Foo\n***\n* Bar`,
-        explanation: `Thematic break spacing form inside list context is not preserved; renderer canonicalizes to '***'`
-    },
-    61: {
-        expected: `- Foo\n- ***`,
-        explanation: `Nested thematic break spacing inside list item is not preserved; renderer canonicalizes hr form`
-    },
-    105: {
-        expected: `Foo\nbar\n***\nbaz`,
-        explanation: `Thematic break spacing is not preserved in tokens; all hr with character '*' render as '***'`
-    }
-} as Record<number, { expected: string, explanation: string }>;
-
 
 describe('Commonmark', () => {
 
@@ -248,13 +216,13 @@ describe('Commonmark', () => {
         describe(section, () => {
             tests.forEach((test) => {
 
-                const testFn = skippedBecauseOfTokenizationLimitations.has(test.example) ? it.skip : it;
+                const testFn = skippedBecauseOfTokenizationLimitations.has(test.example) ? it.fails : it;
 
                 testFn(`${test.section} ${test.example}`, async () => {
                     const markdownMarked = marked.use(markedMarkdownRenderer())
                     const result = (await markdownMarked.parse(test.markdown)).trim();
 
-                    const expected = normalizationOverwrites[test.example]?.expected ?? test.markdown + '\n';
+                    const expected = test.markdown + '\n';
                     expect(result).toEqual(expected.trim());
                 });
             });
